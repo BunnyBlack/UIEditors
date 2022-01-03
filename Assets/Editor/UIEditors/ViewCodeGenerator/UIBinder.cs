@@ -79,6 +79,10 @@ namespace Editor.UIEditors.ViewCodeGenerator
 
         private bool CheckIfChildren()
         {
+            if (targetGo == null)
+            {
+                return false;
+            }
             var list = targetGo.GetComponentsInChildren<Transform>();
             return list.Any(transform => transform == newGo.transform);
         }
