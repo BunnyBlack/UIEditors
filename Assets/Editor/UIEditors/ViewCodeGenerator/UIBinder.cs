@@ -27,7 +27,7 @@ namespace Editor.UIEditors.ViewCodeGenerator
 #pragma warning disable CS0414
         private bool newGoError;
 #pragma warning restore CS0414
-        
+
 
         [Button(ButtonSizes.Large), ButtonGroup("GenerateGroup"), HideIf("IsScriptNull")]
         private void GenerateCode()
@@ -119,7 +119,7 @@ namespace Editor.UIEditors.ViewCodeGenerator
                 return;
             }
             newGoError = false;
-            
+
             var uiElement = new UIElement
             {
                 Obj = newGo
