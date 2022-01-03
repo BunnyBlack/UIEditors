@@ -18,6 +18,7 @@ namespace Editor.UIEditors.ViewCodeGenerator
         private Behaviour targetScript;
 
         [ShowInInspector, HideIf("IsScriptNull")]
+        [ListDrawerSettings(HideAddButton = true)]
         private List<UIElement> componentList;
 
         [ShowInInspector, OnValueChanged("CreateNewUIElement"), HideIf("IsScriptNull"), BoxGroup("新变量")]

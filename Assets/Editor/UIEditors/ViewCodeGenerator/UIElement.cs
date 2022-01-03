@@ -13,19 +13,12 @@ namespace Editor.UIEditors.ViewCodeGenerator
 {
     public class UIElement
     {
+        [Required]
         public GameObject Obj;
         [OnValueChanged("UpdateFieldName")] public string FieldName;
-
-        [HorizontalGroup("Type Group")]
-        [ValueDropdown("GetListOfUIElementType"), OnValueChanged("CheckIfUnknown"), VerticalGroup("Type Group/Type")]
+        [ValueDropdown("GetListOfUIElementType")]
         public string Type = UIElementType.Unknown;
-
-        private bool showTypeInputArea = false;
-
-        [ShowIf("@showTypeInputArea"), VerticalGroup("Type Group/TypeName")]
-        [LabelWidth(70)]
-        public string TypeName;
-
+        
         #region Public
 
         #endregion
@@ -55,11 +48,6 @@ namespace Editor.UIEditors.ViewCodeGenerator
             }
             components.Add(UIElementType.Unknown);
             return components;
-        }
-
-        private void CheckIfUnknown()
-        {
-            showTypeInputArea = Type == UIElementType.Unknown;
         }
 
 
