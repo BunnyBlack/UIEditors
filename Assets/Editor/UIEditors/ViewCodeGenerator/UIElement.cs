@@ -20,15 +20,15 @@ namespace Editor.UIEditors.ViewCodeGenerator
         public string Type = UIElementType.Unknown;
         
         #region Public
-
-        #endregion
-
-        #region Private
-
-        private void UpdateFieldName()
+        
+        public void UpdateFieldName()
         {
             FieldName = Obj.name;
         }
+        
+        #endregion
+
+        #region Private
 
         private IEnumerable<string> GetListOfUIElementType()
         {

@@ -17,13 +17,17 @@ namespace Editor.UIEditors.ViewCodeGenerator
          OnValueChanged("GenerateAllComponents")]
         private Behaviour targetScript;
 
-        [ShowInInspector, HideIf("IsScriptNull")]
-        [ListDrawerSettings(HideAddButton = true)]
+        [ShowInInspector, HideIf("IsScriptNull")] [ListDrawerSettings(HideAddButton = true)]
         private List<UIElement> componentList;
 
+        [InfoBox("放入的物体必须是targetGo的子物体", "@newGoError", InfoMessageType = InfoMessageType.Error)]
         [ShowInInspector, OnValueChanged("CreateNewUIElement"), HideIf("IsScriptNull"), BoxGroup("新变量")]
-        [ValidateInput("CheckIfChildren", "放入的物体必须是targetGo的子物体")]
         private GameObject newGo;
+
+#pragma warning disable CS0414
+        private bool newGoError;
+#pragma warning restore CS0414
+        
 
         [Button(ButtonSizes.Large), ButtonGroup("GenerateGroup"), HideIf("IsScriptNull")]
         private void GenerateCode()
@@ -37,7 +41,11 @@ namespace Editor.UIEditors.ViewCodeGenerator
             Debug.Log($"更新脚本: {targetScript.name}");
         }
 
-        #region Privates
+        #region Public
+
+        #endregion
+
+        #region Private
 
         private void ClearAll()
         {
@@ -104,7 +112,21 @@ namespace Editor.UIEditors.ViewCodeGenerator
 
         private void CreateNewUIElement()
         {
-
+            if (!CheckIfChildren())
+            {
+                newGoError = true;
+                newGo = null;
+                return;
+            }
+            newGoError = false;
+            
+            var uiElement = new UIElement
+            {
+                Obj = newGo
+            };
+            uiElement.UpdateFieldName();
+            componentList.Add(uiElement);
+            newGo = null;
         }
 
         #endregion
