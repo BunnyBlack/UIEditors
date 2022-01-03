@@ -1,6 +1,5 @@
 // 方便编辑用的脚本 请在这边写好以后 将标志设好 并将代码转放到相应的txt文件中
 
-using System;
 using UnityEngine;
 
 namespace Editor.UIEditors.ViewCodeGenerator.CodeTemplate
