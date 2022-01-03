@@ -14,12 +14,56 @@ namespace Editor.UIEditors.ViewCodeGenerator
     public class UIElement
     {
         public GameObject Obj;
-        public string FieldName;
-        [TypeFilter("FilterValidType")] public UIElementType Type;
+        [OnValueChanged("UpdateFieldName")] public string FieldName;
+
+        [HorizontalGroup("Type Group")]
+        [ValueDropdown("GetListOfUIElementType"), OnValueChanged("CheckIfUnknown"), VerticalGroup("Type Group/Type")]
+        public string Type = UIElementType.Unknown;
+
+        private bool showTypeInputArea = false;
+
+        [ShowIf("@showTypeInputArea"), VerticalGroup("Type Group/TypeName")]
+        [LabelWidth(70)]
+        public string TypeName;
 
         #region Public
 
-        public static UIElementType GetUIElementTypeByType(Type type)
+        #endregion
+
+        #region Private
+
+        private void UpdateFieldName()
+        {
+            FieldName = Obj.name;
+        }
+
+        private IEnumerable<string> GetListOfUIElementType()
+        {
+            if (Obj == null)
+            {
+                return new string[] { };
+            }
+            var list = Obj.GetComponents<Behaviour>();
+            var components = new List<string>();
+            foreach (var behaviour in list)
+            {
+                var type = GetUIElementTypeByType(behaviour.GetType());
+                if (type != UIElementType.Unknown)
+                {
+                    components.Add(type);
+                }
+            }
+            components.Add(UIElementType.Unknown);
+            return components;
+        }
+
+        private void CheckIfUnknown()
+        {
+            showTypeInputArea = Type == UIElementType.Unknown;
+        }
+
+
+        public static string GetUIElementTypeByType(Type type)
         {
             if (type == typeof(Text))
             {
@@ -43,7 +87,7 @@ namespace Editor.UIEditors.ViewCodeGenerator
             }
             if (type == typeof(Scrollbar))
             {
-                return UIElementType.ScrollBar;
+                return UIElementType.Scrollbar;
             }
             if (type == typeof(Dropdown))
             {
@@ -63,30 +107,6 @@ namespace Editor.UIEditors.ViewCodeGenerator
             }
 
             return UIElementType.Unknown;
-        }
-
-        #endregion
-
-        #region Private
-
-        private IEnumerable<UIElementType> FilterValidType()
-        {
-            if (Obj == null)
-            {
-                return new List<UIElementType>();
-            }
-            var filteredList = new List<UIElementType>();
-
-            var components = Obj.GetComponents<MonoBehaviour>();
-            foreach (var component in components)
-            {
-                var type = GetUIElementTypeByType(component.GetType());
-                if (type != UIElementType.Unknown)
-                {
-                    filteredList.Add(type);
-                }
-            }
-            return filteredList;
         }
 
         #endregion
