@@ -6,7 +6,9 @@ namespace Editor.UIEditors.ViewCodeGenerator.CodeTemplate
 {
     public class ViewTemplate : MonoBehaviour
     {
-        private bool isAdded = false;
+        private bool isAdded;
+        // 开始和结束标志之间会被更新重置，编辑器中未持有的字段请不要写在开始和结束标志之间
+        // 请不要改动开始结束标志，否则将无法再支持更新操作
         // FieldStart
         // FieldEnd
 
