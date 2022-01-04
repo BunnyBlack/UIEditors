@@ -8,26 +8,30 @@ namespace Editor.UIEditors.ViewCodeGenerator
 {
     public class UIBinder
     {
-        [ShowInInspector, OnValueChanged("ClearAll")]
+        [ShowInInspector, OnValueChanged(nameof(ClearAll))]
         private GameObject targetGo;
 
-        [ShowInInspector, HideIf("IsTargetGoNull"),
-         InfoBox("请选择该物体上的View脚本，没有则创建一个", InfoMessageType.Info, "IsScriptNull")]
-        [ValueDropdown("GetListOfMonoBehavioursOnThisGo"), InlineButton("CreateNewViewScript", "New"),
-         OnValueChanged("GenerateAllComponents")]
+        [ShowInInspector, HideIf(nameof(IsTargetGoNull)),
+         InfoBox("请选择该物体上的View脚本，没有则创建一个", InfoMessageType.Info, nameof(IsScriptNull))]
+        [ValueDropdown(nameof(GetListOfMonoBehavioursOnThisGo)), InlineButton(nameof(CreateNewViewScript), "New"),
+         OnValueChanged(nameof(GenerateAllComponents))]
         private Behaviour targetScript;
 
-        [ShowInInspector, HideIf("IsScriptNull")] [ListDrawerSettings(HideAddButton = true)]
-        private List<UIElement> componentList;
+        [ShowInInspector, HideIf(nameof(IsScriptNull)), ListDrawerSettings(HideAddButton = true)]
+        private List<UIElement> componentList = new List<UIElement>();
 
         [InfoBox("放入的物体必须是targetGo的子物体", "@newGoError", InfoMessageType = InfoMessageType.Error)]
-        [ShowInInspector, OnValueChanged("CreateNewUIElement"), HideIf("IsScriptNull"), BoxGroup("新变量")]
+        [ShowInInspector, OnValueChanged(nameof(CreateNewUIElement)), HideIf(nameof(IsScriptNull)), BoxGroup("添加新变量")]
         private GameObject newGo;
+
+        [ShowInInspector,HideIf(nameof(IsScriptNull)), BoxGroup("批量添加新变量")] 
+        [ValueDropdown(nameof(GetListOfChildren), IsUniqueList = true)]
+        [OnValueChanged(nameof(CreateNewUIElements))]
+        private List<GameObject> newGos = new List<GameObject>();
 
 #pragma warning disable CS0414
         private bool newGoError;
 #pragma warning restore CS0414
-
 
         [Button(ButtonSizes.Large), ButtonGroup("GenerateGroup"), HideIf("IsScriptNull")]
         private void GenerateCode()
@@ -50,7 +54,10 @@ namespace Editor.UIEditors.ViewCodeGenerator
         private void ClearAll()
         {
             targetScript = null;
-            componentList = null;
+            componentList.Clear();
+            newGo = null;
+            newGos.Clear();
+            newGoError = false;
         }
 
         private bool IsTargetGoNull()
@@ -110,7 +117,38 @@ namespace Editor.UIEditors.ViewCodeGenerator
             return list.Any(transform => transform == newGo.transform);
         }
 
+        private IEnumerable<GameObject> GetListOfChildren()
+        {
+            if (targetGo == null)
+            {
+                return new GameObject[] { };
+            }
+            var transforms = targetGo.GetComponentsInChildren<Transform>();
+            var list = transforms.Select(transform => transform.gameObject).ToList();
+
+            return list;
+        }
+
         private void CreateNewUIElement()
+        {
+            if (!CheckIfChildren())
+            {
+                newGoError = true;
+                newGo = null;
+                return;
+            }
+            newGoError = false;
+
+            var uiElement = new UIElement
+            {
+                Obj = newGo
+            };
+            uiElement.UpdateFieldName();
+            componentList.Add(uiElement);
+            newGo = null;
+        }
+        
+        private void CreateNewUIElements()
         {
             if (!CheckIfChildren())
             {
