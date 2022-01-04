@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using Button = UnityEngine.UI.Button;
-using Image = UnityEngine.UI.Image;
-using Slider = UnityEngine.UI.Slider;
-using Toggle = UnityEngine.UI.Toggle;
 
 namespace Editor.UIEditors.ViewCodeGenerator
 {
